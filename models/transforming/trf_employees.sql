@@ -21,14 +21,15 @@ with recursive managers
             on emp.reportsto = mgr.employee_id
       ),
  
-      offices (office, officecity, officecountry)
+      offices (officeid, officecity, officecountry)
       as
       (
-      select office, officecity, officecountry from {{ref('stg_offices')}}
+      select ho.officeid, so.officecity, so.officecountry from {{ref('stg_sat_offices')}} as so inner join
+      {{ref("stg_hub_offices")}} as ho on so.officehashkey = ho.officehashkey 
       )
  
   -- This is the "main select".
   select managers.indent, managers.employee_id, offices.officecity, offices.officecountry,
   managers.employee_title, managers.manager_id, managers.manager_title, managers.employee_name,
   managers.manager_name
-    from managers left join offices on managers.office = offices.office
+    from managers left join offices on managers.office = offices.officeid
